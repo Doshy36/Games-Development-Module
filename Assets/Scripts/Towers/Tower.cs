@@ -14,6 +14,9 @@ public abstract class Tower : MonoBehaviour
     public bool moving = false;
     [HideInInspector]
     public int price = 0;
+    [HideInInspector]
+    public int towerIndex;
+    public int upgradeLevel;
 
     private bool isPlaceable = true;
     private bool isColliding = false;
@@ -23,6 +26,7 @@ public abstract class Tower : MonoBehaviour
     void Awake()
     {
         firePerSecond = 1 / fireRate;
+        upgradeLevel = -1;
     }
 
     void Update()
@@ -37,6 +41,16 @@ public abstract class Tower : MonoBehaviour
         }
     }
 
+    protected abstract void Spawn();
+
+    public void Upgrade(TowerUpgrade upgradeInfo)
+    {
+        damage = upgradeInfo.newDamage;
+        fireRate = upgradeInfo.newFireRate;
+        range = upgradeInfo.newRange;
+        upgradeLevel++;
+    }
+
     protected void Fire() 
     {
         GameObject spawned = Instantiate(projectilePrefab, projectileSpawn.position, projectileSpawn.rotation, GameManager.instance.level.projectileHolder.transform);
@@ -49,15 +63,19 @@ public abstract class Tower : MonoBehaviour
     protected void HandleMove() 
     {
         if (Input.GetMouseButtonDown(1)) {
+            GameManager.instance.shopManager.StopPlacingTower();
+
             Destroy(gameObject);
         } else if (Input.GetMouseButtonDown(0)) {
-            if (!isColliding) {
+            // Place it if there is no collisions
+            if (moving && !isColliding) {
                 moving = false;
 
                 // Reset just in case
                 SetOverlay(Color.white);
 
                 GameManager.instance.shopManager.PurchaseTower(this);
+                Spawn();
             }
         } else {
             Vector3 newPosition = GameManager.instance.mainCamera.ScreenToWorldPoint(Input.mousePosition);

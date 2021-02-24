@@ -2,14 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class ShopManager : MonoBehaviour
 {
     
     public GameManager gameManager;
     public TowerInfo[] towers;
-
     public Color cantAffordColor;
+
+    [Header("Upgrade Menu")]
+    public Canvas upgradeMenu;
+    public Image upgradeImage;
+    public Text titleText;
+    public Text damageText;
+    public Text fireRateText;
+    public Text rangeText;
+    public Text priceText;
+    public Text refundText;
+    public Button upgradeButton;
+    public Button refundButton;
 
     // The tower info of the tower being dragged currently
     private TowerInfo currentlyPlacing;
@@ -19,9 +31,101 @@ public class ShopManager : MonoBehaviour
         foreach (TowerInfo info in towers) {
             info.priceText.text = info.name + "\n" + info.price + " Coins";
         }
+
+        upgradeMenu.enabled = false;
     }
 
-    public void PlaceTower(int towerIndex) 
+    void Update()
+    {
+        if (currentlyPlacing != null) {
+            return;
+        }
+
+        if (Input.GetMouseButtonDown(0)) {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
+            if (hit.collider != null && hit.collider.gameObject.tag == "Tower") {
+                Tower tower = hit.collider.gameObject.GetComponent<Tower>();
+
+                if (tower.moving) {
+                    return;
+                }
+                TowerInfo towerInfo = towers[tower.towerIndex];
+
+                UpdateUpgradeMenu(tower, towerInfo);
+
+                upgradeMenu.enabled = true;
+            } else if (!EventSystem.current.IsPointerOverGameObject()) {
+                upgradeMenu.enabled = false;
+            }
+        }
+
+    }
+
+    private void UpdateUpgradeMenu(Tower tower, TowerInfo towerInfo)
+    {
+        // Default updates
+        upgradeImage.sprite = towerInfo.buyButton.image.sprite;
+        upgradeImage.preserveAspect = true;
+        titleText.text = towerInfo.name;
+        damageText.text = "Damage: " + tower.damage;
+        fireRateText.text = "Fire Rate " + tower.fireRate;
+        rangeText.text = "Range: " + tower.range;
+
+        // Refund specific stuff
+        int refundPrice = tower.upgradeLevel == -1 ? Mathf.CeilToInt(tower.price / 2) : towerInfo.upgrades[tower.upgradeLevel].refundPrice;
+        refundText.text = "Price: " + refundPrice;
+
+        refundButton.onClick.RemoveAllListeners();
+        refundButton.onClick.AddListener(() => {
+            Destroy(tower.gameObject);
+
+            gameManager.playerManager.AddCoins(refundPrice);
+            upgradeMenu.enabled = false;
+        });
+
+        // If there is an upgrade available on the tower, add the extra data
+        bool hasUpgrade = tower.upgradeLevel + 1 < towerInfo.upgrades.Length;
+        if (hasUpgrade) {
+            TowerUpgrade nextUpgrade = towerInfo.upgrades[tower.upgradeLevel + 1];
+            
+            damageText.text += " (-> " + nextUpgrade.newDamage + ")";
+            fireRateText.text += " (-> " + nextUpgrade.newFireRate + ")";
+            rangeText.text += " (-> " + nextUpgrade.newRange + ")";
+            priceText.text = "Cost: " + nextUpgrade.upgradePrice;
+
+            upgradeButton.onClick.RemoveAllListeners();
+            upgradeButton.onClick.AddListener(() => {
+                if (gameManager.playerManager.UseCoins(nextUpgrade.upgradePrice)) {
+                    tower.Upgrade(nextUpgrade);
+
+                    UpdateUpgradeMenu(tower, towers[tower.towerIndex]);
+                }
+            });
+
+            UpdateUpgradeButton();
+
+            priceText.enabled = true;
+            upgradeButton.enabled = true;
+        } else {
+            priceText.enabled = false;
+            upgradeButton.enabled = false;
+        }
+    }
+
+    private void UpdateUpgradeButton()
+    {
+        int price = int.Parse(priceText.text.Split(' ')[1]);
+        if (!gameManager.playerManager.HasCoins(price)) {
+            upgradeButton.interactable = false;
+            upgradeButton.image.color = cantAffordColor;
+        } else {
+            upgradeButton.interactable = true;
+            upgradeButton.image.color = Color.white;
+        }
+    }
+
+    public void StartPlacingTower(int towerIndex) 
     {
         if (towerIndex >= towers.Length) {
             return;
@@ -42,6 +146,13 @@ public class ShopManager : MonoBehaviour
         tower.moving = true;
         
         currentlyPlacing = info;
+        UpdateButtonColors();
+    }
+
+    public void StopPlacingTower() 
+    {
+        currentlyPlacing = null;
+
         UpdateButtonColors();
     }
 
@@ -70,6 +181,9 @@ public class ShopManager : MonoBehaviour
                 ChangeButtonColor(info, Color.white);
             }
         }
+        if (upgradeMenu.enabled) {
+            UpdateUpgradeButton();
+        }
     }
 
     public void ChangeButtonColor(TowerInfo info, Color color) 
@@ -93,5 +207,17 @@ public class TowerInfo
     public Button buyButton;
     public Text priceText;
     public int price;
+    public TowerUpgrade[] upgrades;
 
+}
+
+[System.Serializable]
+public class TowerUpgrade
+{
+    public GameObject upgradePrefab;
+    public int upgradePrice;
+    public int refundPrice;
+    public float newDamage;
+    public float newFireRate;
+    public float newRange;
 }

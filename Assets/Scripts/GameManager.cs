@@ -60,8 +60,10 @@ public class GameManager : MonoBehaviour
         Enemy closestEnemy = null;
         foreach (Enemy enemy in enemies) {
             if (Vector2.Distance(position, enemy.transform.position) <= range) {
-                if (closestEnemy == null || (enemy.currentTarget >= closestEnemy.currentTarget && enemy.distanceToTarget < closestEnemy.distanceToTarget)) {
-                    closestEnemy = enemy;
+                if (closestEnemy == null 
+                    || enemy.currentTarget >= closestEnemy.currentTarget 
+                    || (enemy.currentTarget == closestEnemy.currentTarget && enemy.distanceToTarget < closestEnemy.distanceToTarget)) {
+                        closestEnemy = enemy;
                 }
             }
         }
