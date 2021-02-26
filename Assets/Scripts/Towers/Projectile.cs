@@ -6,10 +6,15 @@ public class Projectile : MonoBehaviour
 {
     public float speed;
     [HideInInspector]
-    public float damage;
+    public int damage;
+    public int pierce = 1;
 
-    void Update()
+    void FixedUpdate()
     {
+        if (GameManager.instance.paused) {
+            return;
+        }
+        
         transform.position += transform.up * Time.deltaTime * speed;
 
         if (!gameObject.GetComponent<Renderer>().IsVisibleFrom(GameManager.instance.mainCamera)) {
@@ -20,7 +25,9 @@ public class Projectile : MonoBehaviour
     public void Hit(Enemy enemy)
     {
         enemy.Damage(damage);
-        
-        Destroy(gameObject);
+
+        if (--pierce <= 0) {
+            Destroy(gameObject);
+        }   
     }
 }

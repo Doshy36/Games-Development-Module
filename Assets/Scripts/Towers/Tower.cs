@@ -6,7 +6,7 @@ public abstract class Tower : MonoBehaviour
 {
     public GameObject projectilePrefab;
     public Transform projectileSpawn;
-    public float damage = 1.0f;
+    public int damage = 1;
     [Min(0.01f)]
     public float fireRate = 1.0f;
     public float range = 10.0f;
@@ -15,7 +15,7 @@ public abstract class Tower : MonoBehaviour
     [HideInInspector]
     public int price = 0;
     [HideInInspector]
-    public int towerIndex;
+    public TowerType type;
     public int upgradeLevel;
 
     private bool isPlaceable = true;
@@ -33,7 +33,16 @@ public abstract class Tower : MonoBehaviour
     {
         if (moving) {
             HandleMove();
-        } else if (HandleFiring()) {
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (GameManager.instance.paused) {
+            return;
+        }
+
+        if (!moving && HandleFiring()) {
             if (Time.time - lastFire >= firePerSecond) {
                 lastFire = Time.time;
                 Fire();
@@ -43,19 +52,20 @@ public abstract class Tower : MonoBehaviour
 
     protected abstract void Spawn();
 
-    public void Upgrade(TowerUpgrade upgradeInfo)
+    public virtual void Upgrade(TowerUpgrade upgradeInfo)
     {
-        damage = upgradeInfo.newDamage;
-        fireRate = upgradeInfo.newFireRate;
-        range = upgradeInfo.newRange;
+        damage = upgradeInfo.damage;
+        fireRate = upgradeInfo.fireRate;
+        range = upgradeInfo.range;
         upgradeLevel++;
     }
 
-    protected void Fire() 
+    protected virtual Projectile Fire() 
     {
         GameObject spawned = Instantiate(projectilePrefab, projectileSpawn.position, projectileSpawn.rotation, GameManager.instance.level.projectileHolder.transform);
         Projectile projectile = spawned.GetComponent<Projectile>();
         projectile.damage = damage;
+        return projectile;
     }
 
     protected abstract bool HandleFiring();

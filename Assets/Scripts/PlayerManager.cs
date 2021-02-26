@@ -12,6 +12,7 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         coins = gameManager.startingCoins;
+        gameManager.coinText.text = coins + "";
 
         gameManager.shopManager.UpdateButtonColors();
     }

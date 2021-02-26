@@ -8,7 +8,7 @@ public class ShopManager : MonoBehaviour
 {
     
     public GameManager gameManager;
-    public TowerInfo[] towers;
+    private TowerManager towerManager;
     public Color cantAffordColor;
 
     [Header("Upgrade Menu")]
@@ -26,9 +26,14 @@ public class ShopManager : MonoBehaviour
     // The tower info of the tower being dragged currently
     private TowerInfo currentlyPlacing;
 
+    void Awake()
+    {
+        towerManager = gameManager.towerManager;
+    }
+
     void Start()
     {
-        foreach (TowerInfo info in towers) {
+        foreach (TowerInfo info in towerManager.towers) {
             info.priceText.text = info.name + "\n" + info.price + " Coins";
         }
 
@@ -50,7 +55,7 @@ public class ShopManager : MonoBehaviour
                 if (tower.moving) {
                     return;
                 }
-                TowerInfo towerInfo = towers[tower.towerIndex];
+                TowerInfo towerInfo = towerManager.towers[(int) tower.type];
 
                 UpdateUpgradeMenu(tower, towerInfo);
 
@@ -69,11 +74,15 @@ public class ShopManager : MonoBehaviour
         upgradeImage.preserveAspect = true;
         titleText.text = towerInfo.name;
         damageText.text = "Damage: " + tower.damage;
-        fireRateText.text = "Fire Rate " + tower.fireRate;
+        fireRateText.text = "Fire Rate " + tower.fireRate + "/s";
         rangeText.text = "Range: " + tower.range;
 
         // Refund specific stuff
-        int refundPrice = tower.upgradeLevel == -1 ? Mathf.CeilToInt(tower.price / 2) : towerInfo.upgrades[tower.upgradeLevel].refundPrice;
+        int refundPrice = Mathf.CeilToInt(tower.price / 2);
+        for (int i = 0; i < tower.upgradeLevel; i++) {
+            refundPrice += Mathf.CeilToInt(towerInfo.upgrades[i].upgradePrice / 2);
+        }
+
         refundText.text = "Price: " + refundPrice;
 
         refundButton.onClick.RemoveAllListeners();
@@ -89,9 +98,9 @@ public class ShopManager : MonoBehaviour
         if (hasUpgrade) {
             TowerUpgrade nextUpgrade = towerInfo.upgrades[tower.upgradeLevel + 1];
             
-            damageText.text += " (-> " + nextUpgrade.newDamage + ")";
-            fireRateText.text += " (-> " + nextUpgrade.newFireRate + ")";
-            rangeText.text += " (-> " + nextUpgrade.newRange + ")";
+            damageText.text += " (-> " + nextUpgrade.damage + ")";
+            fireRateText.text += " (-> " + nextUpgrade.fireRate + ")";
+            rangeText.text += " (-> " + nextUpgrade.range + ")";
             priceText.text = "Cost: " + nextUpgrade.upgradePrice;
 
             upgradeButton.onClick.RemoveAllListeners();
@@ -99,17 +108,17 @@ public class ShopManager : MonoBehaviour
                 if (gameManager.playerManager.UseCoins(nextUpgrade.upgradePrice)) {
                     tower.Upgrade(nextUpgrade);
 
-                    UpdateUpgradeMenu(tower, towers[tower.towerIndex]);
+                    UpdateUpgradeMenu(tower, towerManager.towers[(int) tower.type]);
                 }
             });
 
             UpdateUpgradeButton();
 
             priceText.enabled = true;
-            upgradeButton.enabled = true;
+            upgradeButton.gameObject.SetActive(true);
         } else {
             priceText.enabled = false;
-            upgradeButton.enabled = false;
+            upgradeButton.gameObject.SetActive(false);
         }
     }
 
@@ -125,28 +134,9 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    public void StartPlacingTower(int towerIndex) 
+    public void StartPlacingTower(TowerInfo towerInfo) 
     {
-        if (towerIndex >= towers.Length) {
-            return;
-        }
-        
-        TowerInfo info = towers[towerIndex];
-
-        if (!gameManager.playerManager.HasCoins(info.price)) {
-            return;
-        }
-
-        Vector3 towerPosition = gameManager.mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        towerPosition.z = 0;
-
-        GameObject gameObject = Instantiate(info.prefab, towerPosition, new Quaternion());
-        Tower tower = gameObject.GetComponent<Tower>();
-        tower.price = info.price;
-        tower.moving = true;
-        
-        currentlyPlacing = info;
-        UpdateButtonColors();
+        currentlyPlacing = towerInfo;
     }
 
     public void StopPlacingTower() 
@@ -169,7 +159,7 @@ public class ShopManager : MonoBehaviour
 
     public void UpdateButtonColors() 
     {
-        foreach (TowerInfo info in towers) {
+        foreach (TowerInfo info in towerManager.towers) {
             if (currentlyPlacing == info) {
                 ChangeButtonColor(info, Color.white);
                 info.buyButton.interactable = false;
@@ -196,28 +186,4 @@ public class ShopManager : MonoBehaviour
         colors.disabledColor = color;
         info.buyButton.colors = colors;
     }
-}
-
-[System.Serializable]
-public class TowerInfo 
-{
-
-    public string name;
-    public GameObject prefab;
-    public Button buyButton;
-    public Text priceText;
-    public int price;
-    public TowerUpgrade[] upgrades;
-
-}
-
-[System.Serializable]
-public class TowerUpgrade
-{
-    public GameObject upgradePrefab;
-    public int upgradePrice;
-    public int refundPrice;
-    public float newDamage;
-    public float newFireRate;
-    public float newRange;
 }

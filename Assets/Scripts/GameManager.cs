@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public Camera mainCamera;
     public PlayerManager playerManager;
     public ShopManager shopManager;
+    public TowerManager towerManager;
     public Level level;
 
     [Header("Game Data")]
@@ -22,8 +23,11 @@ public class GameManager : MonoBehaviour
 
     [Header("Game References")]
     public Text coinText;
+    public Text playButton;
+    public Text speedButton;
 
     public bool paused = false;
+    private bool speed = false;
 
     void Awake()
     {
@@ -55,13 +59,29 @@ public class GameManager : MonoBehaviour
         paused = false;
     }
 
+    public void TogglePlay()
+    {
+        paused = !paused;
+        Time.timeScale = paused ? 0 : (speed ? 2 : 1);
+
+        playButton.text = paused ? "Play" : "Pause";
+    }
+
+    public void ToggleSpeed()
+    {
+        speed = !speed;
+        Time.timeScale = speed ? 2 : 1;
+        
+        speedButton.text = speed ? "Normal" : "Fast";
+    }
+
     public Enemy GetClosestEnemy(Vector3 position, float range) 
     {
         Enemy closestEnemy = null;
         foreach (Enemy enemy in enemies) {
             if (Vector2.Distance(position, enemy.transform.position) <= range) {
                 if (closestEnemy == null 
-                    || enemy.currentTarget >= closestEnemy.currentTarget 
+                    || enemy.currentTarget > closestEnemy.currentTarget 
                     || (enemy.currentTarget == closestEnemy.currentTarget && enemy.distanceToTarget < closestEnemy.distanceToTarget)) {
                         closestEnemy = enemy;
                 }

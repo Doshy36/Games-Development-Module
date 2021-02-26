@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 
 public class Level : MonoBehaviour
@@ -11,9 +12,11 @@ public class Level : MonoBehaviour
     public Transform spawn;
     public Round[] rounds;
     public Transform[] route;
+    public Text roundAmount;
 
     [HideInInspector]
     public GameObject projectileHolder;
+    [HideInInspector]
     public GameObject enemyHolder;
 
     private int currentRound;
@@ -41,6 +44,8 @@ public class Level : MonoBehaviour
 
         lastSpawn = Time.fixedTime;
         entitiesToSpawn = spawnData.enemies;
+
+        roundAmount.text = "1";
     }
 
     void FixedUpdate()
@@ -75,13 +80,14 @@ public class Level : MonoBehaviour
 
     private void NextRound()
     {
-        if (++currentRound >= rounds.Length) {
+        roundAmount.text = (++currentRound + 1) + "";
+        if (currentRound >= rounds.Length) {
             gameManager.Pause();
             return;
         }
 
-        entitiesToSpawn = spawnData.enemies;
         roundData = 0;
+        entitiesToSpawn = spawnData.enemies;
     }
 
 }

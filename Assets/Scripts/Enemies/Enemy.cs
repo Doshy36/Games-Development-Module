@@ -7,7 +7,6 @@ public class Enemy : MonoBehaviour
 
     public delegate void OnDeath();
 
-    public float health = 1.0f;
     public float speed = 1.0f;
     public int level = 1;
     [HideInInspector]
@@ -23,33 +22,29 @@ public class Enemy : MonoBehaviour
         reward = level;
     }
 
-    public void Damage(float damage) 
+    public void Damage(int damage) 
     {
-        health -= damage;
+        level -= damage;
+        if (level <= 0) {
+            GameManager.instance.playerManager.AddCoins(reward);
 
-        if (health <= 0) {
-            if (--level <= 0) {
-                GameManager.instance.playerManager.AddCoins(reward);
+            Die();
+        } else {
+            GameObject enemyObject = GameManager.instance.enemyPrefabs[level];
+            Enemy enemy = enemyObject.GetComponent<Enemy>();
 
-                Die();
-            } else {
-                GameObject enemyObject = GameManager.instance.enemyPrefabs[level - 1];
-                Enemy enemy = enemyObject.GetComponent<Enemy>();
-
-                GetComponent<SpriteRenderer>().sprite = GameManager.instance.enemyPrefabs[level - 1].GetComponent<SpriteRenderer>().sprite;
-                health = enemy.health;
-                speed = enemy.speed;
-            }
+            GetComponent<SpriteRenderer>().sprite = GameManager.instance.enemyPrefabs[level - 1].GetComponent<SpriteRenderer>().sprite;
+            speed = enemy.speed;
         }
     }
 
     public void Die()
     {
-        Destroy(gameObject);
-
         if (deathListener != null) {
             deathListener.Invoke();
         }
+
+        Destroy(gameObject);
     }
 
     void FixedUpdate()
@@ -70,6 +65,7 @@ public class Enemy : MonoBehaviour
                 Die();
                 return;
             }
+            nextTarget = GameManager.instance.level.route[currentTarget];
         }
         distanceToTarget = Vector3.Distance(transform.position, nextTarget.position);
     }

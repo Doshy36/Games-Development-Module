@@ -291,20 +291,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 8766932975614244005}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9713c2a0e9492704eb0638ed02354cba, type: 3}
+  m_Script: {fileID: 11500000, guid: e433c3af2d4fd2f4db4f957dab1962cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 3135120012416219208, guid: ccdf281415be0a94685691f5e2ec96e4, type: 3}
   projectileSpawn: {fileID: 970523656851283315}
   damage: 1
-  fireRate: 2
+  fireRate: 1.5
   range: 10
   moving: 0
   price: 0
-  towerIndex: 0
-  upgradeLevel: 0
-  gunObject: {fileID: 6338466671026973316}
-  gunSpeed: 15
+  type: 0
+  upgradeLevel: -1
+  gunObject: {fileID: 4973321871028507908}
+  gunSpeed: 40
+  projectileSpeed: 45
 --- !u!61 &7238915128310916940
 BoxCollider2D:
   m_ObjectHideFlags: 0
