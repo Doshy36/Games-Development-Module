@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -8,21 +10,42 @@ public class PlayerManager : MonoBehaviour
     public GameManager gameManager;
     public int coins;
     public int health;
+    public Text healthAmount; 
+    public Text gameOverText;
+    public Text victoryText;
 
     void Start()
     {
         coins = gameManager.startingCoins;
         gameManager.coinText.text = coins + "";
 
+        health = gameManager.startingHealth;
+        healthAmount.text = health + "";
+
         gameManager.shopManager.UpdateButtonColors();
+    }
+
+    void Update()
+    {
+        if ((gameOverText.enabled || victoryText.enabled) && Input.GetKeyDown(KeyCode.R)) {
+            SceneManager.LoadScene("Level 1", LoadSceneMode.Single);
+        }
     }
 
     public void Damage(int damage) 
     {
-        health -= damage;
+        if (gameManager.infiniteHealth) {
+            return;
+        }
+        
+        health = Mathf.Max(0, health - damage);
+        
+        healthAmount.text = health + "";
 
         if (health <= 0) {
-            // End
+            gameManager.Pause();
+
+            gameOverText.enabled = true;
         }
     }
 
@@ -33,11 +56,13 @@ public class PlayerManager : MonoBehaviour
 
     public bool UseCoins(int coins) 
     {
-        if (this.coins - coins < 0) {
+        if (!HasCoins(coins)) {
             return false;
         }
 
-        SetCoins(this.coins - coins);
+        if (!gameManager.infiniteMoney) {
+            SetCoins(this.coins - coins);
+        }
         return true;
     }
 
@@ -46,7 +71,7 @@ public class PlayerManager : MonoBehaviour
         if (coins <= this.coins) {
             return true;
         }
-        return false;
+        return gameManager.infiniteMoney;
     }
 
     private void SetCoins(int coins)

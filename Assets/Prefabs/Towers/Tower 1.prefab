@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3925859465964294356}
   - component: {fileID: 2537165256096697188}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 473473608027776614}
   - component: {fileID: 732988651149656319}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,7 +175,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7695056185669548038}
   - component: {fileID: 5231077190334538848}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 7604123756721521320}
   - component: {fileID: 7238915128310916940}
   - component: {fileID: 4443684150757952425}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Tower 1
   m_TagString: Tower
   m_Icon: {fileID: 0}
@@ -306,6 +306,7 @@ MonoBehaviour:
   gunObject: {fileID: 4973321871028507908}
   gunSpeed: 40
   projectileSpeed: 45
+  pierce: 0
 --- !u!61 &7238915128310916940
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -362,7 +363,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8766932977134658715}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,7 +395,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 970523656851283315}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -51,6 +51,7 @@ public class Level : MonoBehaviour
     void FixedUpdate()
     {
         if (gameManager.paused) {
+            lastSpawn = Time.time - lastSpawn;
             return;
         }
 
@@ -82,7 +83,10 @@ public class Level : MonoBehaviour
     {
         roundAmount.text = (++currentRound + 1) + "";
         if (currentRound >= rounds.Length) {
+            currentRound = rounds.Length;
             gameManager.Pause();
+
+            gameManager.playerManager.victoryText.enabled = true;
             return;
         }
 

@@ -151,7 +151,7 @@ public class ShopManager : MonoBehaviour
         currentlyPlacing = null;
 
         if (!gameManager.playerManager.UseCoins(tower.price)) {
-            Destroy(tower);
+            Destroy(tower.gameObject);
         }
 
         UpdateButtonColors();

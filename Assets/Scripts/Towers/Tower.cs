@@ -19,7 +19,6 @@ public abstract class Tower : MonoBehaviour
     public int upgradeLevel;
 
     private bool isPlaceable = true;
-    private bool isColliding = false;
     private float firePerSecond;
     private float lastFire = 0;
 
@@ -72,11 +71,19 @@ public abstract class Tower : MonoBehaviour
 
     protected void HandleMove() 
     {
+        Collider2D[] colliding = new Collider2D[1];
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.layerMask = LayerMask.NameToLayer("Ground");
+        GetComponent<BoxCollider2D>().OverlapCollider(filter, colliding);
+        
+        bool isColliding = colliding[0] != null;
+
         if (Input.GetMouseButtonDown(1)) {
             GameManager.instance.shopManager.StopPlacingTower();
 
             Destroy(gameObject);
         } else if (Input.GetMouseButtonDown(0)) {
+
             // Place it if there is no collisions
             if (moving && !isColliding) {
                 moving = false;
@@ -111,18 +118,6 @@ public abstract class Tower : MonoBehaviour
     {
         foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>()) {
             renderer.color = color;
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag != "Projectile") {
-            isColliding = true;
-        }
-    }
-
-    void OnCollisionExit2D(Collision2D other) {
-        if (other.gameObject.tag != "Projectile") {
-            isColliding = false;
         }
     }
 

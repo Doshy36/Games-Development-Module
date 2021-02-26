@@ -26,8 +26,15 @@ public class GameManager : MonoBehaviour
     public Text playButton;
     public Text speedButton;
 
+    [Header("Dev Tools")]
+    public bool infiniteHealth;
+    public bool infiniteMoney;
+    public Button infiniteHealthButton;
+    public Button infiniteMoneyButton;
+
     public bool paused = false;
     private bool speed = false;
+    private float timer;
 
     void Awake()
     {
@@ -62,6 +69,7 @@ public class GameManager : MonoBehaviour
     public void TogglePlay()
     {
         paused = !paused;
+
         Time.timeScale = paused ? 0 : (speed ? 2 : 1);
 
         playButton.text = paused ? "Play" : "Pause";
@@ -88,6 +96,22 @@ public class GameManager : MonoBehaviour
             }
         }
         return closestEnemy;
+    }
+
+    public void ActivateInfiniteHealth()
+    {
+        infiniteHealth = true;
+
+        infiniteHealthButton.gameObject.SetActive(false);
+    }
+
+    public void ActivateInfiniteMoney()
+    {
+        infiniteMoney = true;
+
+        infiniteMoneyButton.gameObject.SetActive(false);
+        
+        shopManager.UpdateButtonColors();
     }
 
     public int getEnemyCount() {
