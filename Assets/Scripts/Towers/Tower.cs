@@ -17,6 +17,7 @@ public abstract class Tower : MonoBehaviour
     [HideInInspector]
     public TowerType type;
     public int upgradeLevel;
+    public AudioSource audioSource;
 
     private bool isPlaceable = true;
     private float firePerSecond;
@@ -61,6 +62,7 @@ public abstract class Tower : MonoBehaviour
 
     protected virtual Projectile Fire() 
     {
+        audioSource.Play();
         GameObject spawned = Instantiate(projectilePrefab, projectileSpawn.position, projectileSpawn.rotation, GameManager.instance.level.projectileHolder.transform);
         Projectile projectile = spawned.GetComponent<Projectile>();
         projectile.damage = damage;

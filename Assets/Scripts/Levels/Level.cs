@@ -86,6 +86,7 @@ public class Level : MonoBehaviour
             currentRound = rounds.Length;
             gameManager.Pause();
 
+            gameManager.victorySource.Play();
             gameManager.playerManager.victoryText.enabled = true;
             return;
         }

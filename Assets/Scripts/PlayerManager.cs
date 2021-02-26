@@ -45,6 +45,7 @@ public class PlayerManager : MonoBehaviour
         if (health <= 0) {
             gameManager.Pause();
 
+            gameManager.gameOverSource.Play();
             gameOverText.enabled = true;
         }
     }

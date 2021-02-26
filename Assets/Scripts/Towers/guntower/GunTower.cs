@@ -33,7 +33,7 @@ public class GunTower : Tower
             float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
             Quaternion target = Quaternion.AngleAxis(angle - 90, Vector3.forward);
             float difference = Quaternion.Angle(gunObject.transform.rotation, target);
-            gunObject.transform.rotation = Quaternion.Lerp(gunObject.transform.rotation, target, Time.deltaTime * gunSpeed);
+            gunObject.transform.rotation = Quaternion.Lerp(gunObject.transform.rotation, target, gunSpeed);
             return difference <= 3f;
         }
         return false;

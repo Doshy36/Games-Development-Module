@@ -25,6 +25,9 @@ public class GameManager : MonoBehaviour
     public Text coinText;
     public Text playButton;
     public Text speedButton;
+    public AudioSource enemyDeathSource;
+    public AudioSource gameOverSource;
+    public AudioSource victorySource;
 
     [Header("Dev Tools")]
     public bool infiniteHealth;
@@ -49,7 +52,10 @@ public class GameManager : MonoBehaviour
 
         GameObject gameObject = Instantiate(enemyPrefabs[level], this.level.spawn.position, new Quaternion(), this.level.enemyHolder.transform);
         Enemy enemy = gameObject.GetComponent<Enemy>();
-        enemy.deathListener = () => enemies.Remove(enemy);
+        enemy.deathListener = () => {
+            enemies.Remove(enemy);
+            enemyDeathSource.Play();
+        };
         enemy.name = "Enemy " + enemies.Count;
 
         enemies.Add(enemy);
