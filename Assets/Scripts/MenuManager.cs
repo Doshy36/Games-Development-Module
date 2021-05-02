@@ -6,11 +6,23 @@ using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
 
+    public GameObject[] levels;
+    public string[] levelNames;
+    private int level;
+
     public AudioSource source;
 
     public void StartGame()
     {
         StartCoroutine(StartGameCoroutine());
+    }
+
+    public void SetLevel(int i)
+    {
+        levels[level].SetActive(false);
+        levels[i].SetActive(true);
+
+        this.level = i;
     }
 
     IEnumerator StartGameCoroutine()
@@ -19,7 +31,7 @@ public class MenuManager : MonoBehaviour
 
         yield return new WaitForSeconds(1);
 
-        SceneManager.LoadScene("Level 1", LoadSceneMode.Single);
+        SceneManager.LoadScene(levelNames[level], LoadSceneMode.Single);
     }
 
 }
