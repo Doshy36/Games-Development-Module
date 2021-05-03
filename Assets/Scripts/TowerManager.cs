@@ -7,17 +7,20 @@ public class TowerManager : MonoBehaviour
 {
 
     public TowerInfo[] towers;
+    public Button mortarTargetButton;
 
     public void StartPlacingTower(int index)
     {
         GameManager gameManager = GameManager.instance;
         TowerInfo info = towers[index];
 
-        if (info == null) {
+        if (info == null)
+        {
             return;
         }
 
-        if (!gameManager.playerManager.HasCoins(info.price)) {
+        if (!gameManager.playerManager.HasCoins(info.price))
+        {
             return;
         }
 
@@ -36,14 +39,14 @@ public class TowerManager : MonoBehaviour
 }
 
 [System.Serializable]
-public class TowerData 
+public class TowerData
 {
     public TowerType type;
     public TowerInfo towerInfo;
 }
 
 [System.Serializable]
-public class TowerInfo 
+public class TowerInfo
 {
 
     public string name;

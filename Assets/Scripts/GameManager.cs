@@ -44,15 +44,17 @@ public class GameManager : MonoBehaviour
         instance = this;
     }
 
-    public Enemy SpawnEnemy(int level) 
+    public Enemy SpawnEnemy(int level)
     {
-        if (level >= enemyPrefabs.Length) {
+        if (level >= enemyPrefabs.Length)
+        {
             return null;
         }
 
         GameObject gameObject = Instantiate(enemyPrefabs[level], this.level.spawn.position, new Quaternion(), this.level.enemyHolder.transform);
         Enemy enemy = gameObject.GetComponent<Enemy>();
-        enemy.deathListener = () => {
+        enemy.deathListener = () =>
+        {
             enemies.Remove(enemy);
             enemyDeathSource.Play();
         };
@@ -85,19 +87,22 @@ public class GameManager : MonoBehaviour
     {
         speed = !speed;
         Time.timeScale = speed ? 2 : 1;
-        
+
         speedButton.text = speed ? "Normal" : "Fast";
     }
 
-    public Enemy GetClosestEnemy(Vector3 position, float range) 
+    public Enemy GetClosestEnemy(Vector3 position, float range)
     {
         Enemy closestEnemy = null;
-        foreach (Enemy enemy in enemies) {
-            if (Vector2.Distance(position, enemy.transform.position) <= range) {
-                if (closestEnemy == null 
-                    || enemy.currentTarget > closestEnemy.currentTarget 
-                    || (enemy.currentTarget == closestEnemy.currentTarget && enemy.distanceToTarget < closestEnemy.distanceToTarget)) {
-                        closestEnemy = enemy;
+        foreach (Enemy enemy in enemies)
+        {
+            if (Vector2.Distance(position, enemy.transform.position) <= range)
+            {
+                if (closestEnemy == null
+                    || enemy.currentTarget > closestEnemy.currentTarget
+                    || (enemy.currentTarget == closestEnemy.currentTarget && enemy.distanceToTarget < closestEnemy.distanceToTarget))
+                {
+                    closestEnemy = enemy;
                 }
             }
         }
@@ -116,11 +121,12 @@ public class GameManager : MonoBehaviour
         infiniteMoney = true;
 
         infiniteMoneyButton.gameObject.SetActive(false);
-        
+
         shopManager.UpdateButtonColors();
     }
 
-    public int getEnemyCount() {
+    public int getEnemyCount()
+    {
         return enemies.Count;
     }
 

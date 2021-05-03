@@ -11,13 +11,15 @@ public class Projectile : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (GameManager.instance.paused) {
+        if (GameManager.instance.paused)
+        {
             return;
         }
-        
+
         transform.position += transform.up * Time.deltaTime * speed;
 
-        if (!gameObject.GetComponent<Renderer>().IsVisibleFrom(GameManager.instance.mainCamera)) {
+        if (!gameObject.GetComponent<Renderer>().IsVisibleFrom(GameManager.instance.mainCamera))
+        {
             Destroy(gameObject);
         }
     }
@@ -26,8 +28,9 @@ public class Projectile : MonoBehaviour
     {
         enemy.Damage(damage);
 
-        if (--pierce <= 0) {
+        if (--pierce <= 0)
+        {
             Destroy(gameObject);
-        }   
+        }
     }
 }
