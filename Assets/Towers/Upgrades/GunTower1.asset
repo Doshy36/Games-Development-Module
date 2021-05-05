@@ -18,6 +18,13 @@ MonoBehaviour:
   damage: 2
   fireRate: 2.25
   range: 12.5
+  upgradeUIData:
+  - textToUpdate: {fileID: 0}
+    nextUpgrade: 
+  - textToUpdate: {fileID: 0}
+    nextUpgrade: 
+  - textToUpdate: {fileID: 0}
+    nextUpgrade: 
   gunSpeed: 0.95
   projectileSpeed: 60
   pierce: 2

@@ -8,29 +8,25 @@ public class ShopManager : MonoBehaviour
 {
 
     public GameManager gameManager;
-    private TowerManager towerManager;
+    public TowerManager towerManager;
     public Color cantAffordColor;
 
     [Header("Upgrade Menu")]
     public Canvas upgradeMenu;
     public Image upgradeImage;
     public Text titleText;
-    public Text damageText;
-    public Text fireRateText;
-    public Text rangeText;
     public Text priceText;
     public Text refundText;
     public Button upgradeButton;
     public Button refundButton;
+    public Transform detailStart;
+    public Vector3 detailDistanceBetween;
+    public GameObject prefabDetailText;
 
     // The tower info of the tower being dragged currently
     private TowerInfo currentlyPlacing;
     private Tower currentlyOpen;
-
-    void Awake()
-    {
-        towerManager = gameManager.towerManager;
-    }
+    private List<Text> details;
 
     void Start()
     {
@@ -63,6 +59,7 @@ public class ShopManager : MonoBehaviour
                 }
                 TowerInfo towerInfo = towerManager.towers[(int)tower.type];
 
+                CloseUpgradeMenu();
                 UpdateUpgradeMenu(tower, towerInfo);
 
                 if (currentlyOpen != null)
@@ -77,6 +74,9 @@ public class ShopManager : MonoBehaviour
             {
                 if (currentlyOpen != null)
                 {
+                    TowerInfo towerInfo = towerManager.towers[(int)currentlyOpen.type];
+
+                    CloseUpgradeMenu();
                     currentlyOpen.OnCloseUpgradeMenu();
                     currentlyOpen = null;
                 }
@@ -86,15 +86,22 @@ public class ShopManager : MonoBehaviour
 
     }
 
+    private void CloseUpgradeMenu()
+    {
+        if (details != null)
+        {
+            details.ForEach(detail => Destroy(detail.gameObject));
+
+            details = null;
+        }
+    }
+
     private void UpdateUpgradeMenu(Tower tower, TowerInfo towerInfo)
     {
         // Default updates
         upgradeImage.sprite = towerInfo.buyButton.image.sprite;
         upgradeImage.preserveAspect = true;
         titleText.text = towerInfo.name;
-        damageText.text = "Damage: " + tower.damage;
-        fireRateText.text = "Fire Rate " + tower.fireRate + "/s";
-        rangeText.text = "Range: " + tower.range;
 
         // Refund specific stuff
         int refundPrice = Mathf.CeilToInt(tower.price / 2);
@@ -110,6 +117,7 @@ public class ShopManager : MonoBehaviour
         {
             Destroy(tower.gameObject);
 
+            gameManager.towerManager.placedTowers.Remove(tower);
             gameManager.playerManager.AddCoins(refundPrice);
             upgradeMenu.enabled = false;
         });
@@ -120,9 +128,6 @@ public class ShopManager : MonoBehaviour
         {
             TowerUpgrade nextUpgrade = towerInfo.upgrades[tower.upgradeLevel + 1];
 
-            damageText.text += " (-> " + nextUpgrade.damage + ")";
-            fireRateText.text += " (-> " + nextUpgrade.fireRate + ")";
-            rangeText.text += " (-> " + nextUpgrade.range + ")";
             priceText.text = "Cost: " + nextUpgrade.upgradePrice;
 
             upgradeButton.onClick.RemoveAllListeners();
@@ -132,6 +137,7 @@ public class ShopManager : MonoBehaviour
                 {
                     tower.Upgrade(nextUpgrade);
 
+                    CloseUpgradeMenu();
                     UpdateUpgradeMenu(tower, towerManager.towers[(int)tower.type]);
                 }
             });
@@ -140,12 +146,43 @@ public class ShopManager : MonoBehaviour
 
             priceText.enabled = true;
             upgradeButton.gameObject.SetActive(true);
+
+            details = tower.ShowValueText(towerInfo, nextUpgrade, CreateText);
+            Vector3 distance = detailStart.position;
+            details.ForEach(text =>
+            {
+                text.gameObject.transform.SetParent(upgradeMenu.gameObject.transform);
+                text.enabled = true;
+                text.transform.position = distance;
+
+                distance += detailDistanceBetween;
+            });
         }
         else
         {
             priceText.enabled = false;
             upgradeButton.gameObject.SetActive(false);
+
+            details = tower.ShowValueText(towerInfo, null, CreateText);
+            Vector3 distance = detailStart.position;
+            details.ForEach(text =>
+            {
+                text.gameObject.transform.SetParent(upgradeMenu.gameObject.transform);
+                text.enabled = true;
+                text.transform.position = distance;
+
+                distance += detailDistanceBetween;
+            });
         }
+    }
+
+    private Text CreateText()
+    {
+        GameObject text = Instantiate(prefabDetailText);
+        text.transform.SetParent(detailStart);
+        text.transform.localScale = Vector3.one;
+
+        return text.GetComponent<Text>();
     }
 
     private void UpdateUpgradeButton()
@@ -182,6 +219,10 @@ public class ShopManager : MonoBehaviour
         if (!gameManager.playerManager.UseCoins(tower.price))
         {
             Destroy(tower.gameObject);
+        }
+        else
+        {
+            gameManager.towerManager.placedTowers.Add(tower);
         }
 
         UpdateButtonColors();

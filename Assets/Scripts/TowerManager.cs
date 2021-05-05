@@ -7,7 +7,9 @@ public class TowerManager : MonoBehaviour
 {
 
     public TowerInfo[] towers;
+    public List<Tower> placedTowers = new List<Tower>();
     public Button mortarTargetButton;
+    public GameObject radiusPrefab;
 
     public void StartPlacingTower(int index)
     {
@@ -39,13 +41,6 @@ public class TowerManager : MonoBehaviour
 }
 
 [System.Serializable]
-public class TowerData
-{
-    public TowerType type;
-    public TowerInfo towerInfo;
-}
-
-[System.Serializable]
 public class TowerInfo
 {
 
@@ -60,5 +55,7 @@ public class TowerInfo
 
 public enum TowerType
 {
-    GunTower
+    GunTower,
+    Mortar,
+    Shooter
 }

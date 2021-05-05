@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class TowerUpgrade : ScriptableObject
 {
@@ -10,6 +11,12 @@ public abstract class TowerUpgrade : ScriptableObject
     public int upgradePrice;
     public int damage;
     public float fireRate;
-    public float range;
+
+    [System.Serializable]
+    public class TowerUpgradeData<T>
+    {
+        public string key;
+        public T value;
+    }
 
 }

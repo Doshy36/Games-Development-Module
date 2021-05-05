@@ -75,7 +75,7 @@ public class MenuManager : MonoBehaviour
 
         PlayerPrefs.SetInt("difficulty", value);
         difficultyButton.text = value == 1 ? "Difficulty: Hard" : "Difficulty: Normal";
-        Settings.instance.sound = value == 1;
+        Settings.instance.hardDifficulty = value == 1;
     }
 
     IEnumerator StartGameCoroutine()

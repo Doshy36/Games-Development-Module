@@ -291,7 +291,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: ad580e1c0df1a9e4b94cd2b8ee1bb5ef, type: 2}
   m_audioClip: {fileID: 8300000, guid: 7d3640e622e01b14189f7dd35bffd99b, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.6
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -425,16 +425,17 @@ MonoBehaviour:
   projectileSpawn: {fileID: 970523656851283315}
   damage: 1
   fireRate: 1.5
-  range: 10
   moving: 0
   price: 0
   type: 0
   upgradeLevel: -1
   audioSource: {fileID: 2724905672607561289}
+  radius: {fileID: 0}
   gunObject: {fileID: 4973321871028507908}
   gunSpeed: 0.9
   projectileSpeed: 50
-  pierce: 0
+  range: 10
+  pierce: 1
 --- !u!61 &7238915128310916940
 BoxCollider2D:
   m_ObjectHideFlags: 0

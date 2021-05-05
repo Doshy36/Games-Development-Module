@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     public Text coinText;
     public Text playButton;
     public Text speedButton;
-    public AudioSource enemyDeathSource;
     public AudioSource gameOverSource;
     public AudioSource victorySource;
 
@@ -35,13 +34,54 @@ public class GameManager : MonoBehaviour
     public Button infiniteHealthButton;
     public Button infiniteMoneyButton;
 
+    [Header("Dev Statistics")]
+    public Text towerText;
+    public Text projectileText;
+    public Text enemyText;
+    private bool showDev;
+
     public bool paused = false;
     private bool speed = false;
     private float timer;
+    private GameObject audioHolder;
 
     void Awake()
     {
         instance = this;
+        towerText.enabled = false;
+        projectileText.enabled = false;
+        enemyText.enabled = false;
+
+        audioHolder = new GameObject("Audio Holder");
+        audioHolder.transform.SetParent(transform);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (showDev)
+            {
+                towerText.enabled = false;
+                projectileText.enabled = false;
+                enemyText.enabled = false;
+                showDev = false;
+            }
+            else
+            {
+                towerText.enabled = true;
+                projectileText.enabled = true;
+                enemyText.enabled = true;
+                showDev = true;
+            }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        towerText.text = "Towers: " + towerManager.placedTowers.Count;
+        projectileText.text = "Projectiles: " + level.projectileHolder.transform.childCount;
+        enemyText.text = "Enemies: " + enemies.Count;
     }
 
     public Enemy SpawnEnemy(int level)
@@ -55,8 +95,8 @@ public class GameManager : MonoBehaviour
         Enemy enemy = gameObject.GetComponent<Enemy>();
         enemy.deathListener = () =>
         {
+            StartCoroutine(PlaySoundAndDestroy(enemy));
             enemies.Remove(enemy);
-            enemyDeathSource.Play();
         };
         enemy.name = "Enemy " + enemies.Count;
 
@@ -86,9 +126,22 @@ public class GameManager : MonoBehaviour
     public void ToggleSpeed()
     {
         speed = !speed;
-        Time.timeScale = speed ? 2 : 1;
+        Time.timeScale = speed ? 3 : 1;
 
         speedButton.text = speed ? "Normal" : "Fast";
+    }
+
+    public List<Enemy> getNearbyEnemies(Vector3 position, float range)
+    {
+        List<Enemy> nearbyEnemies = new List<Enemy>();
+        foreach (Enemy enemy in enemies)
+        {
+            if (Vector2.Distance(position, enemy.transform.position) <= range)
+            {
+                nearbyEnemies.Add(enemy);
+            }
+        }
+        return nearbyEnemies;
     }
 
     public Enemy GetClosestEnemy(Vector3 position, float range)
@@ -128,6 +181,20 @@ public class GameManager : MonoBehaviour
     public int getEnemyCount()
     {
         return enemies.Count;
+    }
+
+    private IEnumerator PlaySoundAndDestroy(Enemy enemy)
+    {
+        AudioSource deathSource = enemy.deathSource;
+        deathSource.gameObject.transform.SetParent(audioHolder.transform);
+        deathSource.Play();
+
+        yield return new WaitWhile(() =>
+        {
+            return deathSource.isPlaying;
+        });
+
+        Destroy(deathSource.gameObject);
     }
 
 }

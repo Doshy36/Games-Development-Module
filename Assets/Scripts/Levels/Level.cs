@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 public class Level : MonoBehaviour
 {
 
+    public string levelName;
     public GameManager gameManager;
     public Tilemap tileMap;
     public Transform spawn;
@@ -25,14 +26,18 @@ public class Level : MonoBehaviour
     private float lastSpawn;
     private float pauseUntil;
 
-    public Round round {
-        get {
+    public Round round
+    {
+        get
+        {
             return rounds[currentRound];
         }
     }
 
-    public SpawnData spawnData {
-        get {
+    public SpawnData spawnData
+    {
+        get
+        {
             return round.data[roundData];
         }
     }
@@ -45,21 +50,27 @@ public class Level : MonoBehaviour
         lastSpawn = Time.fixedTime;
         entitiesToSpawn = spawnData.enemies;
 
-        roundAmount.text = "1";
+        roundAmount.text = "1/" + (rounds.Length - 1);
     }
 
     void FixedUpdate()
     {
-        if (gameManager.paused) {
+        if (gameManager.paused)
+        {
             lastSpawn = Time.time - lastSpawn;
             return;
         }
 
-        if (entitiesToSpawn == 0) {
-            if (gameManager.getEnemyCount() == 0) {
-                if (++roundData >= round.data.Length) {
+        if (entitiesToSpawn == 0)
+        {
+            if (gameManager.getEnemyCount() == 0)
+            {
+                if (++roundData >= round.data.Length)
+                {
                     NextRound();
-                } else {
+                }
+                else
+                {
                     pauseUntil = spawnData.pauseTime;
                     entitiesToSpawn = spawnData.enemies;
                 }
@@ -67,11 +78,13 @@ public class Level : MonoBehaviour
             return;
         }
 
-        if (pauseUntil > 0 && Time.time < pauseUntil) {
+        if (pauseUntil > 0 && Time.time < pauseUntil)
+        {
             return;
         }
 
-        if (Time.fixedTime - lastSpawn >= spawnData.spawnRate) {
+        if (Time.fixedTime - lastSpawn >= spawnData.spawnRate)
+        {
             lastSpawn = Time.fixedTime;
 
             Enemy enemy = gameManager.SpawnEnemy(spawnData.levels[Random.Range(0, spawnData.levels.Length)]);
@@ -81,8 +94,14 @@ public class Level : MonoBehaviour
 
     private void NextRound()
     {
-        roundAmount.text = (++currentRound + 1) + "";
-        if (currentRound >= rounds.Length) {
+        roundAmount.text = (++currentRound + 1) + "/" + (rounds.Length - 1);
+        if (currentRound == rounds.Length - 1)
+        {
+            roundAmount.text = "Boss Round";
+        }
+        else if (currentRound >= rounds.Length)
+        {
+            roundAmount.text = "Victory";
             currentRound = rounds.Length;
             gameManager.Pause();
 

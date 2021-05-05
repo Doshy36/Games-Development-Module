@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class Tower : MonoBehaviour
 {
@@ -9,15 +11,14 @@ public abstract class Tower : MonoBehaviour
     public int damage = 1;
     [Min(0.01f)]
     public float fireRate = 1.0f;
-    public float range = 10.0f;
     [HideInInspector]
     public bool moving = false;
     [HideInInspector]
     public int price = 0;
-    [HideInInspector]
     public TowerType type;
     public int upgradeLevel;
     public AudioSource audioSource;
+    public GameObject radius;
 
     private bool isPlaceable = true;
     private float firePerSecond;
@@ -27,6 +28,11 @@ public abstract class Tower : MonoBehaviour
     {
         firePerSecond = 1 / fireRate;
         upgradeLevel = -1;
+
+        radius = Instantiate(GameManager.instance.towerManager.radiusPrefab);
+        radius.transform.SetParent(gameObject.transform);
+        radius.transform.localPosition = Vector3.zero;
+        radius.SetActive(false);
     }
 
     void Update()
@@ -63,29 +69,39 @@ public abstract class Tower : MonoBehaviour
     {
         damage = upgradeInfo.damage;
         fireRate = upgradeInfo.fireRate;
-        range = upgradeInfo.range;
         upgradeLevel++;
     }
 
-    protected virtual Projectile Fire()
-    {
-        audioSource.Play();
-        GameObject spawned = Instantiate(projectilePrefab, projectileSpawn.position, projectileSpawn.rotation, GameManager.instance.level.projectileHolder.transform);
-        Projectile projectile = spawned.GetComponent<Projectile>();
-        projectile.damage = damage;
-        return projectile;
-    }
+    protected abstract void Fire();
 
     protected abstract bool HandleFiring();
 
     public virtual void OnOpenUpgradeMenu()
     {
-
+        radius.SetActive(true);
     }
 
     public virtual void OnCloseUpgradeMenu()
     {
+        radius.SetActive(false);
+    }
 
+    public virtual List<Text> ShowValueText(TowerInfo info, TowerUpgrade nextUpgrade, Func<Text> createText)
+    {
+        List<Text> text = new List<Text>();
+
+        text.Add(createText());
+        text.Add(createText());
+
+        text[0].text = "Damage: " + damage;
+        text[1].text = "Fire Rate: " + fireRate;
+
+        if (nextUpgrade != null)
+        {
+            text[0].text += " (-> " + nextUpgrade.damage + ")";
+            text[1].text += " (-> " + nextUpgrade.fireRate + ")";
+        }
+        return text;
     }
 
     protected void HandleMove()
@@ -148,11 +164,6 @@ public abstract class Tower : MonoBehaviour
         {
             renderer.color = color;
         }
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(transform.position, range);
     }
 
 }

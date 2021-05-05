@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5725791423492889084}
   - component: {fileID: -432982379057702273}
   - component: {fileID: 1531860805502035255}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Motar
   m_TagString: Tower
   m_Icon: {fileID: 0}
@@ -74,8 +74,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1133551473
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: f4621a297d32694458de4523d786d76e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -100,17 +100,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54d23655b8f3ea74fa26a724f9153b41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 3135120012416219208, guid: ccdf281415be0a94685691f5e2ec96e4, type: 3}
+  projectilePrefab: {fileID: 7040701294037077333, guid: 24e56bb8036d7f14ebbf25cb69eaac02, type: 3}
   projectileSpawn: {fileID: 2465875232371891212}
   damage: 1
   fireRate: 1
-  range: 10
   moving: 0
   price: 0
-  type: 0
-  upgradeLevel: 0
+  type: 1
+  upgradeLevel: -1
   audioSource: {fileID: 6163663185898253968}
   target: {fileID: 8834290406208113005}
+  blastRadius: 1
+  projectileSpeed: 0.5
 --- !u!50 &-432982379057702273
 Rigidbody2D:
   serializedVersion: 4
@@ -168,7 +169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3893163826537741978}
   - component: {fileID: 6163663185898253968}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Audio Source
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +295,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2465875232371891212}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Projectile Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4817655172511220855}
   - component: {fileID: 60470809119441655}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,8 +384,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1978861169
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 98af2d281a79cc34db30a31ba4c7ef79, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

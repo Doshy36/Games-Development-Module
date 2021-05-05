@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
     public GameManager gameManager;
     public int coins;
     public int health;
-    public Text healthAmount; 
+    public Text healthAmount;
     public Text gameOverText;
     public Text victoryText;
 
@@ -27,22 +27,32 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        if ((gameOverText.enabled || victoryText.enabled) && Input.GetKeyDown(KeyCode.R)) {
-            SceneManager.LoadScene("Level 1", LoadSceneMode.Single);
+        if (gameOverText.enabled || victoryText.enabled)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene(gameManager.level.levelName, LoadSceneMode.Single);
+            }
+            else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);
+            }
         }
     }
 
-    public void Damage(int damage) 
+    public void Damage(int damage)
     {
-        if (gameManager.infiniteHealth) {
+        if (gameManager.infiniteHealth)
+        {
             return;
         }
-        
+
         health = Mathf.Max(0, health - damage);
-        
+
         healthAmount.text = health + "";
 
-        if (health <= 0) {
+        if (health <= 0)
+        {
             gameManager.Pause();
 
             gameManager.gameOverSource.Play();
@@ -50,26 +60,29 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void AddCoins(int coins) 
+    public void AddCoins(int coins)
     {
         SetCoins(this.coins + coins);
     }
 
-    public bool UseCoins(int coins) 
+    public bool UseCoins(int coins)
     {
-        if (!HasCoins(coins)) {
+        if (!HasCoins(coins))
+        {
             return false;
         }
 
-        if (!gameManager.infiniteMoney) {
+        if (!gameManager.infiniteMoney)
+        {
             SetCoins(this.coins - coins);
         }
         return true;
     }
 
-    public bool HasCoins(int coins) 
+    public bool HasCoins(int coins)
     {
-        if (coins <= this.coins) {
+        if (coins <= this.coins)
+        {
             return true;
         }
         return gameManager.infiniteMoney;

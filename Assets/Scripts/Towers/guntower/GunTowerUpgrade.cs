@@ -7,6 +7,7 @@ public class GunTowerUpgrade : TowerUpgrade
 {
     public float gunSpeed;
     public float projectileSpeed;
+    public float range;
     public int pierce;
 
 }
